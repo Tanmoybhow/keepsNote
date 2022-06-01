@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>KeepsNote</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+        integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    * p{
+        margin-bottom: 0;
+    }
+
+    .html {
+        font-size: 62.5%;
+    }
+
+    .body {
+        position: relative;
+    }
+
+    .note_item {
+        height: 250px;
+        background-color: #fff;
+    }
+    .note_item h5{
+        text-transform: capitalize;
+        padding-top: 12px;
+    }
+    .note_item .dot{
+        width: 20px;
+        height: 20px;
+        /* background-color: antiquewhite; */
+        position: relative;
+        cursor: pointer;
+    }
+    .note_item .dot i{
+        font-size: 1.1rem;
+    }
+    .dot .edit_del{
+        width: 100px;
+        background-color: #f1f1f1;
+        /* border: 1px solid green; */
+        padding: 0;
+        position: absolute;
+        border-radius: 5px;
+        transform: scale(0);
+        transform-origin: left;
+        transition: all .5s ease;
+    }
+    .dot .edit_del li{
+        list-style: none;
+        width: 100%;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* border: 1px solid red; */
+        /* border-radius: 5px; */
+    }
+    .dot .edit{
+        border-bottom: 1px solid #aaa;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+    }
+
+    .main_item p {
+        margin-top: 14px;
+        color: blue;
+        font-size: 1.6rem;
+    }
+
+    .rounded_div {
+        width: 130px;
+        height: 130px;
+        border: 2px dashed blue;
+        cursor: pointer;
+    }
+
+    .rounded_div i {
+        color: blue;
+        font-size: 7rem;
+    }
+
+    .add_modal {
+        /* width: 27%; */
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        background-color: #fff;
+        display: none;
+        transition: all .5s ease;
+        transform: translate(-50%, -50%);
+    }
+    .update_model{
+        display: none;
+    }
+    .add_modal .card-header {
+        background-color: #fff;
+    }
+
+    .add_modal .card-body input {
+        display: block;
+        width: 100%;
+        border: 1px solid #000;
+        padding: 9px 9px;
+    }
+
+    .add_modal .card-body textarea {
+        width: 100%;
+        max-height: 160px;
+        border: 1px solid #000;
+        overflow-y: auto;
+        padding: 9px;
+    }
+    .add_modal button{
+        width: 100%;
+        margin-top: 12px;
+    }
+    .add_modal #close{
+        cursor: pointer;
+    }
+
+    ::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: blue;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    .alert{
+        display: none;
+    }
+</style>
+
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">KeepsNote</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="about.html">About</a>
+                    </li>
+                </ul>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search Notes..." aria-label="Search" id="search">
+                </form>
+            </div>
+        </div>
+    </nav>
+    <div class="alert alert-danger alert-dismissible fade show px-5" role="alert">
+        <strong>Empty Notes!</strong> You have to fill up your note title and desc.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+
+    <div class="container-fluid py-4 px-md-5 px-3" id="notes_container">
+        <div class="row">
+            <div class="col-md-3 col-12 mb-3">
+                <div class="card main_item note_item shadow d-flex justify-content-center align-items-center">
+                    <div class="rounded_div rounded-circle d-flex justify-content-center align-items-start">
+                        <i class="fa-light fa-plus"></i>
+                    </div>
+                    <p>Add a Note</p>
+                </div>
+            </div>
+            <!-- <div class="col-md-3 col-12 mb-3" id="${index}">
+                <div class="card  note_item shadow px-3 py-2">
+                    <h5 class="card-title px-3">heyy</h5>
+                    <div class="card-body" style="overflow-y: auto;">
+                         hiii
+                    </div>
+                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                        <p style="margin-bottom: 0;">22 march 2022</p>
+                        <div class="dot d-flex justify-content-center align-items-center">
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                            <div class="edit_del">
+                                <li class="edit">
+                                    <p>Edit</p>
+                                </li>
+                                <li class="delete">
+                                    Delete
+                                </li>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+        
+            <!-- <div class="col-md-3 col-12"></div>
+           <div class="col-md-3 col-12"></div> -->
+        </div>
+    </div>
+    <div class="card add_modal col-md-3 col-11">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 style="margin-bottom: 0;">Add New Note note</h6>
+            <i class="fa-solid fa-xmark" id="close"></i>
+        </div>
+        <div class="card-body">
+            <p><strong>Title</strong></p>
+            <input type="text" id="title">
+            <p><strong>Description</strong></p>
+            <textarea rows="6" id="desc"></textarea>
+            <button class="btn btn-large btn-block btn-primary" type="button" id="add_note">Add Note</button>
+        </div>
+    </div>
+
+    <div class="card add_modal update_model col-md-3 col-11">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 style="margin-bottom: 0;">Update the note</h6>
+            <i class="fa-solid fa-xmark" id="closeupdate"></i>
+        </div>
+        <div class="card-body">
+            <p><strong>Title</strong></p>
+            <input type="text" id="title">
+            <p><strong>Description</strong></p>
+            <textarea rows="6" id="desc"></textarea>
+            <button class="btn btn-large btn-block btn-primary" type="button" id="update_note">Update Note</button>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+        crossorigin="anonymous"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
+
+
+
